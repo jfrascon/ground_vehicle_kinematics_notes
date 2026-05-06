@@ -590,4 +590,125 @@ Finalmente, sustituyendo \(\Sigma^+\), se llega a la expresión:
 \end{equation}
 
 Como se comentó anteriormente, el problema computacional surge cuando el ordenador evalúa la expresión \((A^{\trans} A)^{-1}\) directamente, ya que debe elevar al cuadrado valores singulares que podrían ser muy cercanos a cero. Al intentar invertir esos valores casi nulos elevados al cuadrado, se producen desbordamientos numéricos. Usando la fórmula final directa \(V \Sigma^+ U^{\trans}\) proporcionada por la SVD, el algoritmo únicamente invierte los valores originales (\(\Sigma^+\)), manteniendo el sistema estable en todo momento.
+
+\section{Cinemática de un robot terrestre con 3 ruedas activas (three swerve drive)}
+
+La base con tres ruedas activas orientables (\textit{three swerve drive}) es un sistema de locomoción omnidireccional. Permite que un robot terrestre se mueva en cualquier dirección manteniendo la orientación del chasis. Cada rueda se orienta de forma independiente, por lo que el robot gana maniobrabilidad y flexibilidad.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\linewidth]{images/three_swerve_drive_configuration.png}
+    \caption{Disposiciones de las 3 ruedas activas en un robot. Izquierda: Configuración Y-invertida. Derecha: configuración Y)}
+    \label{fig2:three-swerve-drive-configuration}
+\end{figure}
+
+Todas las ruedas tienen el mismo radio \(r\) y están situadas a la misma distancia \(d\) del centro de la base. Tanto el radio \(r\) como la distancia \(d\) son parámetros estrictamente positivos (\(r > 0\), \(d > 0\)).
+
+Las ruedas se posicionan con respecto al SC \(\frameR\) con los siguientes ángulos de montaje:
+
+\[
+    \psi_i = \phi_i - \frac{\pi}{2} = 0 \quad \rightarrow \quad \phi_i = \frac{\pi}{2} = \alpha_i + \beta_i \quad \rightarrow \quad \beta_i = \frac{\pi}{2} - \alpha_i
+\]
+
+Por tanto, los ángulos de montaje \(\alpha_i\) y \(\beta_i\) para las ruedas en la configuración Y-invertida son:
+
+\begin{itemize}
+    \item \(\alpha \in \left[\frac{\pi}{2}, \pi\right)\).
+    \item Rueda frontal \((i = 0)\):
+          \[
+              \begin{aligned}
+                  \alpha_0   & = 0                                        \\
+                  \vect{d}_0 & = (d\cos\alpha_0,\ d\sin\alpha_0) = (d, 0) \\
+                  \beta_0    & =\frac{\pi}{2} - \alpha_0 = \frac{\pi}{2}
+              \end{aligned}
+          \]
+    \item Rueda izquierda \((i = 1)\):
+          \[
+              \begin{aligned}
+                  \alpha_1   & = \alpha                                                      \\
+                  \vect{d}_1 & = (d\cos\alpha_1, d\sin\alpha_1) = (d\cos\alpha, d\sin\alpha) \\
+                  \beta_1    & = \frac{\pi}{2} - \alpha_1 = \frac{\pi}{2} - \alpha
+              \end{aligned}
+          \]
+    \item Rueda derecha \((i = 2)\):
+          \[
+              \begin{aligned}
+                  \alpha_2   & = -\alpha                                                                                         \\
+                  \vect{d}_2 & = (d\cos\alpha_2, d\sin\alpha_2) = (d\cos(-\alpha), d\sin(-\alpha)) = (d\cos\alpha, -d\sin\alpha) \\
+                  \beta_2    & = \frac{\pi}{2} - \alpha_2 = \frac{\pi}{2} - (-\alpha) = \frac{\pi}{2} + \alpha
+              \end{aligned}
+          \]
+\end{itemize}
+
+Para la configuración Y:
+
+\begin{itemize}
+    \item \(\alpha \in \left(0, \frac{\pi}{2}\right]\).
+    \item Rueda trasera \((i = 0)\):
+          \[
+              \begin{aligned}
+                  \alpha_0   & = \pi                                       \\
+                  \vect{d}_0 & = (d\cos\alpha_0, d\sin\alpha_0) = (-d, 0)  \\
+                  \beta_0    & = \frac{\pi}{2} - \alpha_0 = -\frac{\pi}{2}
+              \end{aligned}
+          \]
+    \item Rueda izquierda \((i = 1)\):
+          \[
+              \begin{aligned}
+                  \alpha_1   & = \alpha                                                      \\
+                  \vect{d}_1 & = (d\cos\alpha_1, d\sin\alpha_1) = (d\cos\alpha, d\sin\alpha) \\
+                  \beta_1    & = \frac{\pi}{2} - \alpha_1 = \frac{\pi}{2} - \alpha
+              \end{aligned}
+          \]
+    \item Rueda derecha \((i = 2)\):
+          \[
+              \begin{aligned}
+                  \alpha_2   & = -\alpha                                                                                         \\
+                  \vect{d}_2 & = (d\cos\alpha_2, d\sin\alpha_2) = (d\cos(-\alpha), d\sin(-\alpha)) = (d\cos\alpha, -d\sin\alpha) \\
+                  \beta_2    & = \frac{\pi}{2} - \alpha_2 = \frac{\pi}{2} - (-\alpha) = \frac{\pi}{2} + \alpha
+              \end{aligned}
+          \]
+\end{itemize}
+
+La matriz \(A\) para ambas configuraciones (Y-invertida y Y) es:
+
+\begin{equation}
+    A = \begin{bmatrix}
+        \phantom{-}\cos\left(\theta_0\right) & sin\left(\theta_0\right)  & d\sin\left(\theta_0 - \alpha_0\right) \\
+        -\sin\left(\theta_0\right)           & \cos\left(\theta_0\right) & d\cos\left(\theta_0 - \alpha_0\right) \\
+        \phantom{-}\cos\left(\theta_1\right) & sin\left(\theta_1\right)  & d\sin\left(\theta_1 - \alpha\right)   \\
+        -\sin\left(\theta_1\right)           & \cos\left(\theta_1\right) & d\cos\left(\theta_1 - \alpha\right)   \\
+        \phantom{-}\cos\left(\theta_2\right) & sin\left(\theta_2\right)  & d\sin\left(\theta_2 + \alpha\right)   \\
+        -\sin\left(\theta_2\right)           & \cos\left(\theta_2\right) & d\cos\left(\theta_2 + \alpha\right)
+    \end{bmatrix}
+    \label{eq:matrix-A-general-3-swerve-drive}
+\end{equation}
+
+donde se ha sustituido el valor de \(\phi_i\) por \(\frac{\pi}{2}\), el valor de \(\beta_0\) por \(\frac{\pi}{2} - \alpha_0\), el valor de \(\beta_1\) por \(\frac{\pi}{2} - \alpha\) (\(\alpha_1 = \alpha\)) y el valor de \(\beta_2\) por \(\frac{\pi}{2} + \alpha\) (\(\alpha_2 = -\alpha\)).
+
+Si vamos un paso más allá y sustituimos el valor de \(\alpha_0\) por \(0\), en la configuración Y-invertida y por \(\pi\) en la configuración Y, se obtiene la matriz \(A\) específica para cada una de las configuraciones:
+
+\begin{equation}
+    \begin{aligned}
+        A_{\text{Y-invertida}} & = \begin{bmatrix}
+                                       \phantom{-}\cos\left(\theta_0\right) & sin\left(\theta_0\right)  & d\sin\left(\theta_0\right)          \\
+                                       -\sin\left(\theta_0\right)           & \cos\left(\theta_0\right) & d\cos\left(\theta_0\right)          \\
+                                       \phantom{-}\cos\left(\theta_1\right) & sin\left(\theta_1\right)  & d\sin\left(\theta_1 - \alpha\right) \\
+                                       -\sin\left(\theta_1\right)           & \cos\left(\theta_1\right) & d\cos\left(\theta_1 - \alpha\right) \\
+                                       \phantom{-}\cos\left(\theta_2\right) & sin\left(\theta_2\right)  & d\sin\left(\theta_2 + \alpha\right) \\
+                                       -\sin\left(\theta_2\right)           & \cos\left(\theta_2\right) & d\cos\left(\theta_2 + \alpha\right)
+                                   \end{bmatrix} \\
+        A_{\text{Y}}           & = \begin{bmatrix}
+                                       \phantom{-}\cos\left(\theta_0\right) & sin\left(\theta_0\right)  & -d\sin\left(\theta_0\right)         \\
+                                       -\sin\left(\theta_0\right)           & \cos\left(\theta_0\right) & -d\cos\left(\theta_0\right)         \\
+                                       \phantom{-}\cos\left(\theta_1\right) & sin\left(\theta_1\right)  & d\sin\left(\theta_1 - \alpha\right) \\
+                                       -\sin\left(\theta_1\right)           & \cos\left(\theta_1\right) & d\cos\left(\theta_1 - \alpha\right) \\
+                                       \phantom{-}\cos\left(\theta_2\right) & sin\left(\theta_2\right)  & d\sin\left(\theta_2 + \alpha\right) \\
+                                       -\sin\left(\theta_2\right)           & \cos\left(\theta_2\right) & d\cos\left(\theta_2 + \alpha\right)
+                                   \end{bmatrix}
+    \end{aligned}
+\end{equation}
+
+Como ejercicio teórico se han obtenido las expresiones explícitas de la matriz \(A\) para cada una de las configuraciones, pero en la práctica, se puede usar la expresión general \ref{eq:matrix-A-general-3-swerve-drive} para resolver la cinemática directa e inversa de ambas configuraciones sin necesidad de hacer distinciones, con tal de usar el ángulo de montaje \(\alpha_0\) correcto para cada una de ellas.
+
 \end{document}
